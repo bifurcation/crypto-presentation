@@ -118,6 +118,7 @@
       <section>
         <h2>Cryptography History</h2>
         <p><em>Let's take a ride in the way back machine!</em></p>
+        <!-- RLB: This would be a good place to insert a disclaimer that all of this is old and busted -->
       </section>
 
       <section>
@@ -361,6 +362,7 @@
       </section>
 
       <section>
+        <!-- RLB: Delete.  Not really true. -->
         <h3>Modern ciphers still use both<br />substitution and transposition<br />at the bit and byte level...</h3>
       </section>
 
@@ -772,6 +774,7 @@
 
       <section style="padding-top: 0;">
         <h3>One-time Pad</h3>
+        <!-- RLB: Note that OTPs *have* been used at some points in history, with actual one-time use codebooks -->
         <p class="left">So why don't we use one-time pads for all of our encryption, if it's so unbreakable?</p>
         <ul>
           <li class="fragment">First, the key needs to be at least as long as your message.  If your message is 5GB, then your key also needs to be 5GB.</li>
@@ -799,6 +802,9 @@
       </section>
 
       <section>
+        <!-- RLB: This is backwards.  You do the things on the previous slide to get these properties. -->
+        <!-- RLB: Also, why aren't these up front?  They apply to the historical stuff as well. -->
+        <!-- RLB: Why are these hard?  Need description of threat model -->
         <h2>Modern Cryptography</h2>
         <p class="left">In addition to solving the key management issue, modern cryptography provides three primary security guarantees:</p>
         <ul>
@@ -841,6 +847,7 @@
           <li>Disadvantages
             <ul>
               <li class="fragment" data-fragment-index="3">Key management is difficult, as each party needs a copy of the key to encrypt or decrypt</li>
+              <!-- RLB: This bullet is just flat wrong - AEAD and MACs give you authenticity and integrity -->
               <li class="fragment" data-fragment-index="4">Provides only confidentiality, with no native assurances about authenticity or integrity</li>
             </ul>
           </li>
@@ -867,24 +874,24 @@
             <td>Stream</td>
           </tr>
           <tr>
-            <td>Camellia</td>
-            <td>128, 192, or 256 bits</td>
-            <td>Block</td>
+            <td><strike>Camellia</strike></td>
+            <td><strike>128, 192, or 256 bits</strike></td>
+            <td><strike>Block</strike></td>
           </tr>
           <tr>
-            <td>3DES</td>
-            <td>168 bits</td>
-            <td>Block</td>
+            <td><strike>3DES</strike></td>
+            <td><strike>168 bits</strike></td>
+            <td><strike>Block</strike></td>
           </tr>
           <tr>
-            <td>RC4</td>
-            <td>128 bits</td>
-            <td>Stream</td>
+            <td><strike>RC4</strike></td>
+            <td><strike>128 bits</strike></td>
+            <td><strike>Stream</strike></td>
           </tr>
           <tr>
-            <td>Twofish</td>
-            <td>128, 192, or 256 bits</td>
-            <td>Block</td>
+            <td><strike>Twofish</strike></td>
+            <td><strike>128, 192, or 256 bits</strike></td>
+            <td><strike>Block</strike></td>
           </tr>
         </table>
         <p class="fragment highlight-current-green friendly-aside" data-fragment-index="1">Mozilla <a href="https://wiki.mozilla.org/Security/Server_Side_TLS">recommends</a> only AES with 128 or 256-bit keys or CHACHA20.<br />When in doubt, contact us!</p>
@@ -918,13 +925,15 @@
         <h3>Stream ciphers</h3>
           <ul>
             <li>Operate on one bit at a time</li>
-            <li class="fragment">Key is permutated with a <strong>nonce</strong>, or a number only used once</li>
-            <li class="fragment">This produces a stream of bits as long as your message, known as a <strong>keystream</strong></li>
+            <li class="fragment">Take the <strong>key</strong>...</li>
+            <li class="fragment">... plus maybe a <strong>nonce</strong>, or a number only used once</li>
+            <li class="fragment">... and produce a stream of bits as long as your message, known as a <strong>keystream</strong></li>
             <li class="fragment">Keystream is then XORed with the plaintext to produce the ciphertext</li>
-            <li class="fragment">Like a one-time pad, the keystream must never be reused; the nonce must be changed with each use</li>
+            <li class="fragment">Like a one-time pad, the keystream must never be reused; the nonce/key must be changed with each use</li>
           </ul>
 
         <aside class="notes">
+          <!-- RLB: RC4 DOESN'T USE A NONCE -->
           A number of systems using RC4 have been broken because the nonces weren't unique enough; see WEP and related-IV attacks
         </aside>
       </section>
@@ -938,11 +947,12 @@
       <section>
         <h3>Block ciphers</h3>
         <ul>
-          <li>Operate on a fixed-size block of data (64 or 128 bits), unlike stream ciphers</li>
+          <li>Operate on a fixed-size block of data (usually 128 bits), unlike stream ciphers</li>
           <li class="fragment">Are the most commonly used symmetric ciphers (AES)</li>
-          <li class="fragment">Use a combination of XOR, permutations, additions, multiplications, shifts, etc.</li>
+          <!-- RLB: This is also true of stream ciphers -->
+          <!-- <li class="fragment">Use a combination of XOR, permutations, additions, multiplications, shifts, etc.</li> -->
           <li class="fragment">Require that data be padded to the length of the block size, adding complexity</li>
-          <li class="fragment">As with reusing keystreams, a given block of data will always encrypt to the same output if you use the same inputs</li>
+          <li class="fragment">A given block of data will always encrypt to the same output if you use the same inputs</li>
         </ul>
         <aside class="notes">
           Block sizes are typically 64 bits (DES, Blowfish) or 128 bits (AES, Twofish)
@@ -962,15 +972,28 @@
       <section style="padding-top: 0;">
         <h3>Block cipher modes of operation</h3>
         <ul style="font-size: .8em;">
-          <li>To solve this, all block ciphers have modes of operation for their use</li>
+          <li>To solve this, all block ciphers have modes of operation for their use, e.g.:</li>
+          <li class="fragment"><strong>Electronic Code Book (ECB):</strong> Encrypt each block independently</li>
+          <li class="fragment"><strong>Cipher Block Chaining (CBC):</strong> Propagate information from one block to the next</li>
+          <li class="fragment"><strong>Counter (CTR):</strong> Encrypt a counter and XOR it with the plaintext</li>
+          <li class="fragment"><strong>Galois/Counter (GCM):</strong> Counter + integrity (more later)</li>
         </ul>
-        <p><img class="fragment" data-fragment-index="1" src="images/third-party/Block_mode_operation_Tux.jpg" style="height: 196px; margin: 0 auto;" /> <img class="fragment" data-fragment-index="2" src="images/third-party/Block_mode_operation_Tux_ecb.jpg" style="height: 196px; margin: 0 auto;" /> <img class="fragment" data-fragment-index="4" src="images/third-party/Block_mode_operation_Tux_secure.jpg" style="height: 196px; margin: 0 auto;" /></p>
-        <ul style="font-size: .8em;">
-          <li class="fragment" data-fragment-index="1">Take an image and divide it into equal-sized blocks
-          <li class="fragment" data-fragment-index="2">Encrypt each block separately using a symmetric key and cipher</li>
-          <li class="fragment" data-fragment-index="3">This is the Electronic Codebook (ECB) block mode of operation</li>
-          <li class="fragment" data-fragment-index="4">Ideally, the encrypted message should look like random noise</li>
-        </ul>
+      </section>
+
+      <section style="padding-top: 0;">
+        <h3>Modes matter a lot!</h3>
+        <table>
+          <tr>
+            <td class="fragment" data-fragment-index="1">Plaintext</td>
+            <td class="fragment" data-fragment-index="2">ECB</td>
+            <td class="fragment" data-fragment-index="3">CBC</td>
+          </tr>
+          <tr>
+            <td class="fragment" data-fragment-index="1"><img src="images/third-party/Block_mode_operation_Tux.jpg" style="height: 196px; margin: 0 auto;" /></td>
+            <td class="fragment" data-fragment-index="2"><img src="images/third-party/Block_mode_operation_Tux_ecb.jpg" style="height: 196px; margin: 0 auto;" /></td>
+            <td class="fragment" data-fragment-index="3"><img src="images/third-party/Block_mode_operation_Tux_secure.jpg" style="height: 196px; margin: 0 auto;" /></td>
+          </tr>
+        </table>
         <p class="fragment friendly-aside">This is meant to scare you! Even with good<br />ciphers, you can still screw up cryptography!</p>
 
         <aside class="notes">
@@ -1001,6 +1024,20 @@
         </ul>
         <p class="fragment friendly-aside">The nonce must always be unique, and the counter should never loop!</p>
       </section>
+
+      <!-- RLB: [[ insert MAC stuff here ]] -->
+      <!-- "Hash Functions" ~~> "Hash verification"  -->
+      <!-- "hash-based message authentication code" -->
+
+      <!-- RLB: For a long time people tried to do encryption and MAC separately -->
+      <!-- RLB: This has some bad results -->
+      <!-- RLB: As a result, today we do AEAD -->
+
+      <!-- RLB: [[ insert AEAD/GCM as a synthesis here -->
+      <!-- RLB: [[ summary: that was a deep dive on symmetric key stuff (encryption and MAC); next steps = asymmetric, protocol ]] -->
+      <!-- RLB: [[ discuss where to go from here ]] -->
+
+      <!-- RLB: SNIP -->
 
       <section>
         <p><em>Unfortunately, symmetric-key cryptography doesn't solve the most persistent of cryptography problems.</em></p>
